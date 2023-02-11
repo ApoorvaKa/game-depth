@@ -56,21 +56,29 @@ public class Player : MonoBehaviour
         _segments.Add(newSegment);
     }
 
-    // if the player collides with itself or any obstacle, end the game
+    // Handle collisions
     private void OnTriggerEnter2D(Collider2D other){
         if (other.tag == "Obstacle"){
             ResetPlayer();
         }
+        if (other.tag == "powerup"){
+            DeleteTail();
+            Destroy(other.gameObject);
+        }
     }
 
-    // reset the player to the starting position
-    private void ResetPlayer(){
+    // get rid of player tail
+    private void DeleteTail(){
         for (int i = 1; i < _segments.Count; i++){
             Destroy(_segments[i].gameObject);
         }
         _segments.Clear();
         _segments.Add(transform); // add the player to the segments list
+    }
 
+    // reset the player to the starting position
+    private void ResetPlayer(){
+        DeleteTail();
         transform.position = Vector3.zero;
     }
 
