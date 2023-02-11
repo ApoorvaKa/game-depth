@@ -55,4 +55,24 @@ public class Player : MonoBehaviour
         newSegment.position = _segments[_segments.Count - 1].position;
         _segments.Add(newSegment);
     }
+
+    // if the player collides with itself or any obstacle, end the game
+    private void OnTriggerEnter2D(Collider2D other){
+        if (other.tag == "Obstacle"){
+            ResetPlayer();
+        }
+    }
+
+    // reset the player to the starting position
+    private void ResetPlayer(){
+        for (int i = 1; i < _segments.Count; i++){
+            Destroy(_segments[i].gameObject);
+        }
+        _segments.Clear();
+        _segments.Add(transform); // add the player to the segments list
+
+        transform.position = Vector3.zero;
+    }
+
+
 }
