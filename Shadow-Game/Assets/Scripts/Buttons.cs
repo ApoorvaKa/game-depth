@@ -10,4 +10,10 @@ public class Buttons : MonoBehaviour
         print("Start Game Pressed");
         SceneManager.LoadScene("level_1");
     }
+
+    public void QuitGame(){
+        // Quit the game
+        print("Quit Game Pressed");
+        Application.Quit();
+    }
 }
