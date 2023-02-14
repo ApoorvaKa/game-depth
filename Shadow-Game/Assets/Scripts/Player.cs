@@ -5,48 +5,97 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public Transform segmentPrefab;
-
+    public Transform cornerPrefab;
     private Vector2 _direction;
-    private string dir = "right";
-    private List<Transform> _segments;
+    public Transform spawnArea;
+    public string dir = "w";
+
+    public float movespeed = 10;
+    public List<Transform> _segments;
+    public List<Transform> corners;
+
+    public Transform currSeg;
+
+    
 
     void Start()
     {
-        // Repeat the Move() function every 0.04 seconds -> boost time to make slower
-        InvokeRepeating("Move", 0.04f, 0.04f);
-
         _segments = new List<Transform>();
-        _segments.Add(transform);
-        InvokeRepeating("Grow", 2, 2);
+        corners = new List<Transform>();
+        currSeg = SpawnSeg();
     }
 
     // Update is called once per frame
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.W)){
-            _direction = Vector2.up;
-            transform.rotation = Quaternion.Euler(0f,0f,90f);
-            gameObject.GetComponent<SpriteRenderer>().flipY = true;
-        }   
-        else if (Input.GetKeyDown(KeyCode.S)){
-            _direction = Vector2.down;
-            transform.rotation = Quaternion.Euler(0f,0f,90f);
-            gameObject.GetComponent<SpriteRenderer>().flipY = false;
-            
-        }
-        else if (Input.GetKeyDown(KeyCode.A)){
-            _direction = Vector2.left;
-            transform.rotation = Quaternion.Euler(0f,0f,0f);
-            gameObject.GetComponent<SpriteRenderer>().flipX = true;
-            
-        }
-        else if (Input.GetKeyDown(KeyCode.D)){
-            _direction = Vector2.right;
-            transform.rotation = Quaternion.Euler(0f,0f,0f);
-            gameObject.GetComponent<SpriteRenderer>().flipX = false;
-        }
+        Move();
     }
+    private void Move()
+    {
+        Vector3 Move = new Vector3(0, 0, 0);
+        if (Input.GetKey(KeyCode.W)){
+            Move = new Vector3(0, 1f, 0);
+            if(dir == "w" || dir == "e"){
+                transform.rotation = Quaternion.Euler(0f,0f,90f);
+                gameObject.GetComponent<SpriteRenderer>().flipY = false;
+                gameObject.GetComponent<SpriteRenderer>().flipX = false;
+                SpawnCorners(dir, "s");
+                dir = "s";
+            } 
+        }   
+        else if (Input.GetKey(KeyCode.S)){
+            Move = new Vector3(0, -1f, 0);
+            if(dir == "w" || dir == "e"){
+                transform.rotation = Quaternion.Euler(0f,0f,90f);
+                gameObject.GetComponent<SpriteRenderer>().flipY = true;
+                gameObject.GetComponent<SpriteRenderer>().flipX = true;
+                SpawnCorners(dir, "n");
+                dir = "n";
+            }
+            
+        }
+        else if (Input.GetKey(KeyCode.A)){
+            Move = new Vector3(-1f, 0, 0);
+            if(dir == "n" || dir == "s"){
+                transform.rotation = Quaternion.Euler(0f,0f,0f);
+                gameObject.GetComponent<SpriteRenderer>().flipX = true;
+                gameObject.GetComponent<SpriteRenderer>().flipY = false;
+                SpawnCorners(dir, "e");
+                dir = "e";
+            }
+        }
+        else if (Input.GetKey(KeyCode.D)){
+            Move = new Vector3(1f, 0, 0);
+            if(dir == "n" || dir == "s"){
+                transform.rotation = Quaternion.Euler(0f,0f,0f);
+                gameObject.GetComponent<SpriteRenderer>().flipX = false;
+                gameObject.GetComponent<SpriteRenderer>().flipY = false;
+                SpawnCorners(dir, "w");
+                dir = "w";
+            }   
+        }
     
+        transform.position += Move * Time.deltaTime*(movespeed);
+        currSeg.localScale = new Vector3(Move.x*.00025f + currSeg.localScale.x + Move.x * (Time.deltaTime*movespeed)/2,currSeg.localScale.y,currSeg.localScale.z);
+
+    }
+
+    private Transform SpawnSeg(){
+        float width = segmentPrefab.GetChild(0).GetComponent<SpriteRenderer>().bounds.size.x;
+        Vector3 spawnpos = new Vector3(spawnArea.position.x-width,spawnArea.position.y,spawnArea.position.z);
+        Transform newSegment = Instantiate(segmentPrefab,spawnpos,transform.rotation);
+        
+        _segments.Add(newSegment);
+        return newSegment;
+    }
+
+    private Transform SpawnCorners(string olddir, string newdir){
+        //Vector3 spawnpos = new Vector3(spawnArea.position.x-width,spawnArea.position.y,spawnArea.position.z);
+        Transform newCorner = Instantiate(cornerPrefab,transform.position,transform.rotation);
+        newCorner.GetComponent<Corner>().Setup(currSeg.gameObject,olddir,newdir);
+        corners.Add(newCorner);
+        return newCorner;
+    }
 
     // Handle collisions
     private void OnTriggerEnter2D(Collider2D other){
