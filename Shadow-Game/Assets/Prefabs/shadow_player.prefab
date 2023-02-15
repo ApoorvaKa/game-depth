@@ -103,7 +103,13 @@ MonoBehaviour:
   _segments: []
   corners: []
   currSeg: {fileID: 0}
+  currCor: {fileID: 0}
   move_cooldown: 0.08
+  touching_corner: 0
+  anim: {fileID: 3435225808366377828}
+  keyCount: 0
+  keys: []
+  holding: 0
 --- !u!1 &8572228362324506455
 GameObject:
   m_ObjectHideFlags: 0
