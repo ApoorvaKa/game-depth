@@ -10,7 +10,6 @@ public class Corner : MonoBehaviour
     public string ndir;
     
     public Transform Setup(GameObject sour, string sourdir, string newdir){
-        print(sdir + ndir);
         source = sour;
         sdir = sourdir;
         ndir = newdir;

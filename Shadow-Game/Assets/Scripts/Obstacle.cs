@@ -16,6 +16,7 @@ public class Obstacle : MonoBehaviour
     {
         if(other.CompareTag("Player")) {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            CameraController.instance.Shake(.3f,.2f);
         }
     }
 

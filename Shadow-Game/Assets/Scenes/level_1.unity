@@ -1170,6 +1170,7 @@ GameObject:
   - component: {fileID: 519420032}
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
+  - component: {fileID: 519420033}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1243,6 +1244,28 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &519420033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06ae873957a379b4680eda38e356bbc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  following: 1
+  zoom: 5
+  player: {fileID: 582603412}
+  shakeDur: 1
+  rotationMultiplier: 7.5
+--- !u!1 &582603412 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 969023573190549521, guid: cd986ed79234f4d288e4e276b303689e, type: 3}
+  m_PrefabInstance: {fileID: 969023573203189422}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &584394870
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4501,6 +4524,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TimerObj
       objectReference: {fileID: 0}
+    - target: {fileID: 6147626198829675719, guid: 2f73f0c79072a4eb1a27473cc50f097c, type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 519420031}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2f73f0c79072a4eb1a27473cc50f097c, type: 3}
 --- !u!1001 &7442616769218196828

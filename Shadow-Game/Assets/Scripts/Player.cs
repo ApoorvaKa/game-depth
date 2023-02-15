@@ -4,30 +4,22 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public Transform segmentPrefab;
-    public Transform cornerPrefab;
+    public Transform segmentPrefab,cornerPrefab,Grabber,spawnArea,currSeg,currCor;
     public SpriteRenderer rend;
-    private Vector2 _direction;
-    public Transform spawnArea;
+    
     public string dir = "w";
 
-    public float movespeed = 10;
-    public List<Transform> _segments;
-    public List<Transform> corners;
-
-    public Transform currSeg;
-    public Transform currCor;
+    public float error = 0.0025f;
+    public List<Transform> _segments,corners;
+    public List<GameObject> keys;
     public float move_cooldown = 0.01f;
     private float wait_to_move = 0f;
     public bool touching_corner = false;
-
     public Animator anim;
-
     public int keyCount = 0;
-    public List<GameObject> keys;
     public bool holding = false;
+    public bool hit_ob = false;
     
-
     void Start()
     {
         _segments = new List<Transform>();
@@ -53,11 +45,11 @@ public class Player : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.Space)){
             holding = true;
             anim.SetBool("grab",true);
-            Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 0.5f);
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(Grabber.position, 0.5f);
             foreach (Collider2D nearby in colliders){
                 if (nearby.tag == "Key"){
                     if (nearby != null){
-                        nearby.transform.parent = gameObject.transform;
+                        nearby.transform.parent = Grabber.transform;
                         keys.Add(nearby.gameObject);
                         keyCount++;
                     }
@@ -75,10 +67,6 @@ public class Player : MonoBehaviour
             keyCount = 0;
         }
     }
-
-
-
-
 
     private void Move()
     {
@@ -163,12 +151,16 @@ public class Player : MonoBehaviour
         }
 
         float cornerwidth = cornerPrefab.GetChild(0).GetComponent<SpriteRenderer>().bounds.size.x;
-        // transform.position += Move * Time.deltaTime*(movespeed);
-        // currSeg.localScale = new Vector3(Move.x*.00025f + currSeg.localScale.x + Move.x * (Time.deltaTime*movespeed)/2,currSeg.localScale.y,currSeg.localScale.z);
-        
         transform.position += Move * (cornerwidth);
-        currSeg.localScale = new Vector3(Move.x*0.02f + currSeg.localScale.x + Move.x * (cornerwidth)/2f,currSeg.localScale.y,currSeg.localScale.z);
-        currSeg.localScale = new Vector3(Move.y*0.02f + currSeg.localScale.x + Move.y * (cornerwidth)/2f,currSeg.localScale.y,currSeg.localScale.z);
+        currSeg.localScale = new Vector3(Move.x*error + currSeg.localScale.x + Move.x * (cornerwidth)/2f,currSeg.localScale.y,currSeg.localScale.z);
+        currSeg.localScale = new Vector3(Move.y*error + currSeg.localScale.x + Move.y * (cornerwidth)/2f,currSeg.localScale.y,currSeg.localScale.z);
+
+        if(hit_ob){
+            transform.position -= Move * (cornerwidth);
+            currSeg.localScale = new Vector3(currSeg.localScale.x - (Move.x*error + Move.x * (cornerwidth)/2f),currSeg.localScale.y,currSeg.localScale.z);
+            currSeg.localScale = new Vector3(currSeg.localScale.x - (Move.y*error + Move.y * (cornerwidth)/2f),currSeg.localScale.y,currSeg.localScale.z);
+            hit_ob = false;
+        }
         
     }
 
@@ -201,9 +193,13 @@ public class Player : MonoBehaviour
         
         if (other.tag == "Obstacle"){
             ResetPlayer();
+            CameraController.instance.Shake(.3f,.2f);
+            
+            //hit_ob = true;
         }
         if (other.tag == "powerup"){
             DeleteTail();
+            currSeg = SpawnSeg();
             Destroy(other.gameObject);
         }
         if (other.tag == "Corner" && Object.ReferenceEquals(other.transform, currCor)){
@@ -238,13 +234,14 @@ public class Player : MonoBehaviour
             Destroy(corners[i].gameObject);
         }
         corners.Clear();
-        currSeg = SpawnSeg();
+        
     }
 
     // reset the player to the starting position
     private void ResetPlayer(){
         DeleteTail();
         transform.position = Vector3.zero;
+        currSeg = SpawnSeg();
         
     }
 
