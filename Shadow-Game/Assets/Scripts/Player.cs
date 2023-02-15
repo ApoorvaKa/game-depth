@@ -6,9 +6,7 @@ public class Player : MonoBehaviour
 {
     public Transform segmentPrefab,cornerPrefab,Grabber,spawnArea,currSeg,currCor;
     public SpriteRenderer rend;
-    
     public string dir = "w";
-
     public float error = 0.0025f;
     public List<Transform> _segments,corners;
     public List<GameObject> keys;
@@ -18,13 +16,16 @@ public class Player : MonoBehaviour
     public Animator anim;
     public int keyCount = 0;
     public bool holding = false;
-    public bool hit_ob = false;
+    public bool hit_ob = true;
+
+    private Vector3 startPos;
     
     void Start()
     {
         _segments = new List<Transform>();
         corners = new List<Transform>();
         keys = new List<GameObject>();
+        startPos = transform.position;
         currSeg = SpawnSeg();
     }
 
@@ -34,7 +35,9 @@ public class Player : MonoBehaviour
         if (wait_to_move <= 0f)
         {
             wait_to_move = move_cooldown;
-            Move();        
+            if(hit_ob){
+                Move();
+            } 
         }
         wait_to_move -= Time.deltaTime;
         Grab();
@@ -154,14 +157,6 @@ public class Player : MonoBehaviour
         transform.position += Move * (cornerwidth);
         currSeg.localScale = new Vector3(Move.x*error + currSeg.localScale.x + Move.x * (cornerwidth)/2f,currSeg.localScale.y,currSeg.localScale.z);
         currSeg.localScale = new Vector3(Move.y*error + currSeg.localScale.x + Move.y * (cornerwidth)/2f,currSeg.localScale.y,currSeg.localScale.z);
-
-        if(hit_ob){
-            transform.position -= Move * (cornerwidth);
-            currSeg.localScale = new Vector3(currSeg.localScale.x - (Move.x*error + Move.x * (cornerwidth)/2f),currSeg.localScale.y,currSeg.localScale.z);
-            currSeg.localScale = new Vector3(currSeg.localScale.x - (Move.y*error + Move.y * (cornerwidth)/2f),currSeg.localScale.y,currSeg.localScale.z);
-            hit_ob = false;
-        }
-        
     }
 
     private Transform SpawnSeg(){
@@ -192,10 +187,11 @@ public class Player : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other){
         
         if (other.tag == "Obstacle"){
-            ResetPlayer();
+            hit_ob = false;
             CameraController.instance.Shake(.3f,.2f);
-            
-            //hit_ob = true;
+            transform.position = startPos;
+            ResetPlayer();
+            hit_ob = true;
         }
         if (other.tag == "powerup"){
             DeleteTail();
@@ -240,9 +236,10 @@ public class Player : MonoBehaviour
     // reset the player to the starting position
     private void ResetPlayer(){
         DeleteTail();
-        transform.position = Vector3.zero;
+        dir = "w";
+        transform.rotation = Quaternion.Euler(0f,0f,0f);
+        transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x),Mathf.Abs(transform.localScale.y),Mathf.Abs(transform.localScale.z));
         currSeg = SpawnSeg();
-        
     }
 
     /*

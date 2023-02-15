@@ -1639,7 +1639,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   following: 1
-  zoom: 5
+  zoom: 7
   player: {fileID: 443177584}
   shakeDur: 1
   rotationMultiplier: 7.5
@@ -5562,6 +5562,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TimerObj
       objectReference: {fileID: 0}
+    - target: {fileID: 6147626198829675719, guid: 2f73f0c79072a4eb1a27473cc50f097c, type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 519420031}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2f73f0c79072a4eb1a27473cc50f097c, type: 3}
 --- !u!1001 &7442616769218196828

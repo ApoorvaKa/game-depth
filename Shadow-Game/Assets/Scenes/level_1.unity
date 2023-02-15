@@ -1257,7 +1257,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   following: 1
-  zoom: 5
+  zoom: 7
   player: {fileID: 582603412}
   shakeDur: 1
   rotationMultiplier: 7.5
