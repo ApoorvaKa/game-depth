@@ -415,11 +415,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 969023573190549521, guid: cd986ed79234f4d288e4e276b303689e, type: 3}
   m_PrefabInstance: {fileID: 969023573203189422}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &616580199 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 969023573190549613, guid: cd986ed79234f4d288e4e276b303689e, type: 3}
-  m_PrefabInstance: {fileID: 969023573203189422}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &809253043
 GameObject:
   m_ObjectHideFlags: 0
@@ -933,41 +928,9 @@ PrefabInstance:
       propertyPath: m_Name
       value: shadow_player
       objectReference: {fileID: 0}
-    - target: {fileID: 969023573190549610, guid: cd986ed79234f4d288e4e276b303689e, type: 3}
-      propertyPath: spawnArea
-      value: 
-      objectReference: {fileID: 616580199}
-    - target: {fileID: 969023573190549612, guid: cd986ed79234f4d288e4e276b303689e, type: 3}
-      propertyPath: m_Size.x
-      value: 19.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 969023573190549612, guid: cd986ed79234f4d288e4e276b303689e, type: 3}
-      propertyPath: m_Size.y
-      value: 19.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 969023573190549612, guid: cd986ed79234f4d288e4e276b303689e, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 969023573190549612, guid: cd986ed79234f4d288e4e276b303689e, type: 3}
-      propertyPath: m_WasSpriteAssigned
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 969023573190549613, guid: cd986ed79234f4d288e4e276b303689e, type: 3}
       propertyPath: m_RootOrder
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 969023573190549613, guid: cd986ed79234f4d288e4e276b303689e, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.2067678
-      objectReference: {fileID: 0}
-    - target: {fileID: 969023573190549613, guid: cd986ed79234f4d288e4e276b303689e, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.2067678
-      objectReference: {fileID: 0}
-    - target: {fileID: 969023573190549613, guid: cd986ed79234f4d288e4e276b303689e, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.2067678
       objectReference: {fileID: 0}
     - target: {fileID: 969023573190549613, guid: cd986ed79234f4d288e4e276b303689e, type: 3}
       propertyPath: m_LocalPosition.x
