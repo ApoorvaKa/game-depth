@@ -20,12 +20,19 @@ public class Player : MonoBehaviour
     public float move_cooldown = 0.01f;
     private float wait_to_move = 0f;
     public bool touching_corner = false;
+
+    public Animator anim;
+
+    public int keyCount = 0;
+    public List<GameObject> keys;
+    public bool holding;
     
 
     void Start()
     {
         _segments = new List<Transform>();
         corners = new List<Transform>();
+        keys = new List<GameObject>();
         currSeg = SpawnSeg();
     }
 
@@ -38,8 +45,36 @@ public class Player : MonoBehaviour
             Move();        
         }
         wait_to_move -= Time.deltaTime;
+        Grab();
         
     }
+
+    public void Grab(){
+        if(Input.GetKeyDown(KeyCode.Space)){
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 0.5f);
+            foreach (Collider2D nearby in colliders){
+                if (nearby.tag == "Key"){
+                    if (nearby != null){
+                        nearby.transform.parent = gameObject.transform;
+                        keys.Add(nearby.gameObject);
+                        keyCount++;
+                    }
+                }   
+            }
+        } else if(Input.GetKeyUp(KeyCode.Space)) {
+            foreach(GameObject i in keys){
+                if(i != null){
+                    i.transform.parent = null;
+                }
+            }
+            keys.Clear();
+            keyCount = 0;
+        }
+    }
+
+
+
+
     private void Move()
     {
         Vector3 Move = new Vector3(0, 0, 0);
@@ -171,6 +206,15 @@ public class Player : MonoBehaviour
         } else {
             touching_corner = false;
         }
+        if (other.tag == "Door"){
+            if(keyCount > 0){
+                keyCount--;
+                Destroy(other.gameObject);
+                Destroy(keys[0]);
+                keys.RemoveAt(0);
+            } 
+        }
+
     }
 
     private void OnTriggerExit2D(Collider2D other){

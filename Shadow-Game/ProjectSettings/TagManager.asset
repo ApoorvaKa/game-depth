@@ -8,6 +8,7 @@ TagManager:
   - powerup
   - Key
   - Corner
+  - Door
   layers:
   - Default
   - TransparentFX
