@@ -25,7 +25,7 @@ public class Player : MonoBehaviour
 
     public int keyCount = 0;
     public List<GameObject> keys;
-    public bool holding;
+    public bool holding = false;
     
 
     void Start()
@@ -51,6 +51,8 @@ public class Player : MonoBehaviour
 
     public void Grab(){
         if(Input.GetKeyDown(KeyCode.Space)){
+            holding = true;
+            anim.SetBool("grab",true);
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 0.5f);
             foreach (Collider2D nearby in colliders){
                 if (nearby.tag == "Key"){
@@ -62,6 +64,8 @@ public class Player : MonoBehaviour
                 }   
             }
         } else if(Input.GetKeyUp(KeyCode.Space)) {
+            anim.SetBool("grab",false);
+            holding = false;
             foreach(GameObject i in keys){
                 if(i != null){
                     i.transform.parent = null;
@@ -71,6 +75,7 @@ public class Player : MonoBehaviour
             keyCount = 0;
         }
     }
+
 
 
 
