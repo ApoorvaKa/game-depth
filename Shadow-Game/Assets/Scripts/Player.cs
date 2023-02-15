@@ -6,6 +6,7 @@ public class Player : MonoBehaviour
 {
     public Transform segmentPrefab;
     public Transform cornerPrefab;
+    public SpriteRenderer rend;
     private Vector2 _direction;
     public Transform spawnArea;
     public string dir = "w";
@@ -15,7 +16,8 @@ public class Player : MonoBehaviour
     public List<Transform> corners;
 
     public Transform currSeg;
-
+    public float move_cooldown = 0.01f;
+    private float wait_to_move = 0f;
     
 
     void Start()
@@ -28,7 +30,13 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        Move();
+        if (wait_to_move <= 0f)
+        {
+            wait_to_move = move_cooldown;
+            Move();        
+        }
+        wait_to_move -= Time.deltaTime;
+        
     }
     private void Move()
     {
@@ -36,63 +44,72 @@ public class Player : MonoBehaviour
         if (Input.GetKey(KeyCode.W)){
             Move = new Vector3(0, 1f, 0);
             if(dir == "w" || dir == "e"){
-                transform.rotation = Quaternion.Euler(0f,0f,90f);
-                gameObject.GetComponent<SpriteRenderer>().flipY = false;
-                gameObject.GetComponent<SpriteRenderer>().flipX = false;
                 SpawnCorners(dir, "s");
                 dir = "s";
+                transform.rotation = Quaternion.Euler(0f,0f,90f);
+                transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x),Mathf.Abs(transform.localScale.y),Mathf.Abs(transform.localScale.z));
             } 
         }   
         else if (Input.GetKey(KeyCode.S)){
             Move = new Vector3(0, -1f, 0);
             if(dir == "w" || dir == "e"){
-                transform.rotation = Quaternion.Euler(0f,0f,90f);
-                gameObject.GetComponent<SpriteRenderer>().flipY = true;
-                gameObject.GetComponent<SpriteRenderer>().flipX = true;
                 SpawnCorners(dir, "n");
                 dir = "n";
+                transform.rotation = Quaternion.Euler(0f,0f,90f);
+                transform.localScale = new Vector3(-1*Mathf.Abs(transform.localScale.x),-1*Mathf.Abs(transform.localScale.y),Mathf.Abs(transform.localScale.z));
+                
             }
             
         }
         else if (Input.GetKey(KeyCode.A)){
             Move = new Vector3(-1f, 0, 0);
             if(dir == "n" || dir == "s"){
-                transform.rotation = Quaternion.Euler(0f,0f,0f);
-                gameObject.GetComponent<SpriteRenderer>().flipX = true;
-                gameObject.GetComponent<SpriteRenderer>().flipY = false;
                 SpawnCorners(dir, "e");
                 dir = "e";
+                transform.rotation = Quaternion.Euler(0f,0f,0f);
+                transform.localScale = new Vector3(-1*Mathf.Abs(transform.localScale.x),Mathf.Abs(transform.localScale.y),Mathf.Abs(transform.localScale.z));
+                
             }
         }
         else if (Input.GetKey(KeyCode.D)){
             Move = new Vector3(1f, 0, 0);
             if(dir == "n" || dir == "s"){
-                transform.rotation = Quaternion.Euler(0f,0f,0f);
-                gameObject.GetComponent<SpriteRenderer>().flipX = false;
-                gameObject.GetComponent<SpriteRenderer>().flipY = false;
                 SpawnCorners(dir, "w");
                 dir = "w";
+                transform.rotation = Quaternion.Euler(0f,0f,0f);
+                transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x),Mathf.Abs(transform.localScale.y),Mathf.Abs(transform.localScale.z));
             }   
         }
-    
-        transform.position += Move * Time.deltaTime*(movespeed);
-        currSeg.localScale = new Vector3(Move.x*.00025f + currSeg.localScale.x + Move.x * (Time.deltaTime*movespeed)/2,currSeg.localScale.y,currSeg.localScale.z);
+
+        float cornerwidth = cornerPrefab.GetChild(0).GetComponent<SpriteRenderer>().bounds.size.x;
+        // transform.position += Move * Time.deltaTime*(movespeed);
+        // currSeg.localScale = new Vector3(Move.x*.00025f + currSeg.localScale.x + Move.x * (Time.deltaTime*movespeed)/2,currSeg.localScale.y,currSeg.localScale.z);
+        transform.position += Move * (cornerwidth);
+        currSeg.localScale = new Vector3(Move.x*0.02f + currSeg.localScale.x + Move.x * (cornerwidth)/2f,currSeg.localScale.y,currSeg.localScale.z);
+        currSeg.localScale = new Vector3(Move.y*0.02f + currSeg.localScale.x + Move.y * (cornerwidth)/2f,currSeg.localScale.y,currSeg.localScale.z);
 
     }
 
     private Transform SpawnSeg(){
-        float width = segmentPrefab.GetChild(0).GetComponent<SpriteRenderer>().bounds.size.x;
-        Vector3 spawnpos = new Vector3(spawnArea.position.x-width,spawnArea.position.y,spawnArea.position.z);
+        //float width = segmentPrefab.GetChild(0).GetComponent<SpriteRenderer>().bounds.size.x;
+        Vector3 spawnpos = new Vector3(spawnArea.position.x,spawnArea.position.y,spawnArea.position.z);
         Transform newSegment = Instantiate(segmentPrefab,spawnpos,transform.rotation);
+
+        newSegment.localScale = new Vector3(0.1f,.97f,1f);
         
         _segments.Add(newSegment);
         return newSegment;
     }
 
     private Transform SpawnCorners(string olddir, string newdir){
-        //Vector3 spawnpos = new Vector3(spawnArea.position.x-width,spawnArea.position.y,spawnArea.position.z);
-        Transform newCorner = Instantiate(cornerPrefab,transform.position,transform.rotation);
-        newCorner.GetComponent<Corner>().Setup(currSeg.gameObject,olddir,newdir);
+        float width = cornerPrefab.GetChild(0).GetComponent<SpriteRenderer>().bounds.size.x;
+        Vector3 spawnpos = new Vector3(spawnArea.position.x,spawnArea.position.y,spawnArea.position.z);
+        Transform newCorner = Instantiate(cornerPrefab,spawnpos,transform.rotation);
+        
+        transform.position = newCorner.GetComponent<Corner>().Setup(currSeg.gameObject,olddir,newdir).position;
+        currSeg = SpawnSeg();
+        currSeg.rotation = newCorner.rotation;
+        //Quaternion.Euler(0f,0f,0f)
         corners.Add(newCorner);
         return newCorner;
     }
@@ -110,11 +127,11 @@ public class Player : MonoBehaviour
 
     // get rid of player tail
     private void DeleteTail(){
-        for (int i = 1; i < _segments.Count; i++){
+        for (int i = 0; i < _segments.Count; i++){
             Destroy(_segments[i].gameObject);
         }
         _segments.Clear();
-        _segments.Add(transform); // add the player to the segments list
+        _segments.Add(transform);
     }
 
     // reset the player to the starting position
