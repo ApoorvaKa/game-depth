@@ -16,8 +16,10 @@ public class Player : MonoBehaviour
     public List<Transform> corners;
 
     public Transform currSeg;
+    public Transform currCor;
     public float move_cooldown = 0.01f;
     private float wait_to_move = 0f;
+    public bool touching_corner = false;
     
 
     void Start()
@@ -48,7 +50,16 @@ public class Player : MonoBehaviour
                 dir = "s";
                 transform.rotation = Quaternion.Euler(0f,0f,90f);
                 transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x),Mathf.Abs(transform.localScale.y),Mathf.Abs(transform.localScale.z));
-            } 
+            } else if(touching_corner && dir == "n"){
+                _segments.Remove(currSeg);
+                dir = "s";
+                Corner c = currCor.GetComponent<Corner>();
+                transform.position = c.Setup(c.source,c.sdir,dir).position;
+                currSeg = SpawnSeg();
+                currSeg.rotation = currCor.rotation;
+                transform.rotation = Quaternion.Euler(0f,0f,90f);
+                transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x),Mathf.Abs(transform.localScale.y),Mathf.Abs(transform.localScale.z));
+            }
         }   
         else if (Input.GetKey(KeyCode.S)){
             Move = new Vector3(0, -1f, 0);
@@ -57,7 +68,17 @@ public class Player : MonoBehaviour
                 dir = "n";
                 transform.rotation = Quaternion.Euler(0f,0f,90f);
                 transform.localScale = new Vector3(-1*Mathf.Abs(transform.localScale.x),-1*Mathf.Abs(transform.localScale.y),Mathf.Abs(transform.localScale.z));
-                
+                currSeg.localScale = new Vector3(-0.1f,.97f,1f);
+            } else if(touching_corner && dir == "s"){
+                _segments.Remove(currSeg);
+                dir = "n";
+                Corner c = currCor.GetComponent<Corner>();
+                transform.position = c.Setup(c.source,c.sdir,dir).position;
+                currSeg = SpawnSeg();
+                currSeg.rotation = currCor.rotation;
+                transform.rotation = Quaternion.Euler(0f,0f,90f);
+                transform.localScale = new Vector3(-1*Mathf.Abs(transform.localScale.x),-1*Mathf.Abs(transform.localScale.y),Mathf.Abs(transform.localScale.z));
+                currSeg.localScale = new Vector3(-0.1f,.97f,1f);
             }
             
         }
@@ -68,7 +89,17 @@ public class Player : MonoBehaviour
                 dir = "e";
                 transform.rotation = Quaternion.Euler(0f,0f,0f);
                 transform.localScale = new Vector3(-1*Mathf.Abs(transform.localScale.x),Mathf.Abs(transform.localScale.y),Mathf.Abs(transform.localScale.z));
-                
+                currSeg.localScale = new Vector3(-0.1f,.97f,1f);
+            } else if(touching_corner && dir == "w"){
+                _segments.Remove(currSeg);
+                dir = "e";
+                Corner c = currCor.GetComponent<Corner>();
+                transform.position = c.Setup(c.source,c.sdir,dir).position;
+                currSeg = SpawnSeg();
+                currSeg.rotation = currCor.rotation;
+                transform.rotation = Quaternion.Euler(0f,0f,0f);
+                transform.localScale = new Vector3(-1*Mathf.Abs(transform.localScale.x),Mathf.Abs(transform.localScale.y),Mathf.Abs(transform.localScale.z));
+                currSeg.localScale = new Vector3(-0.1f,.97f,1f);
             }
         }
         else if (Input.GetKey(KeyCode.D)){
@@ -78,16 +109,27 @@ public class Player : MonoBehaviour
                 dir = "w";
                 transform.rotation = Quaternion.Euler(0f,0f,0f);
                 transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x),Mathf.Abs(transform.localScale.y),Mathf.Abs(transform.localScale.z));
-            }   
+            } else if(touching_corner && dir == "e"){
+                _segments.Remove(currSeg);
+                dir = "w";
+                Corner c = currCor.GetComponent<Corner>();
+                transform.position = c.Setup(c.source,c.sdir,dir).position;
+                currSeg = SpawnSeg();
+                currSeg.rotation = currCor.rotation;
+                transform.rotation = Quaternion.Euler(0f,0f,0f);
+                transform.rotation = Quaternion.Euler(0f,0f,0f);
+                transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x),Mathf.Abs(transform.localScale.y),Mathf.Abs(transform.localScale.z));
+            }
         }
 
         float cornerwidth = cornerPrefab.GetChild(0).GetComponent<SpriteRenderer>().bounds.size.x;
         // transform.position += Move * Time.deltaTime*(movespeed);
         // currSeg.localScale = new Vector3(Move.x*.00025f + currSeg.localScale.x + Move.x * (Time.deltaTime*movespeed)/2,currSeg.localScale.y,currSeg.localScale.z);
+        
         transform.position += Move * (cornerwidth);
         currSeg.localScale = new Vector3(Move.x*0.02f + currSeg.localScale.x + Move.x * (cornerwidth)/2f,currSeg.localScale.y,currSeg.localScale.z);
         currSeg.localScale = new Vector3(Move.y*0.02f + currSeg.localScale.x + Move.y * (cornerwidth)/2f,currSeg.localScale.y,currSeg.localScale.z);
-
+        
     }
 
     private Transform SpawnSeg(){
@@ -109,19 +151,31 @@ public class Player : MonoBehaviour
         transform.position = newCorner.GetComponent<Corner>().Setup(currSeg.gameObject,olddir,newdir).position;
         currSeg = SpawnSeg();
         currSeg.rotation = newCorner.rotation;
-        //Quaternion.Euler(0f,0f,0f)
         corners.Add(newCorner);
+        currCor = newCorner;
         return newCorner;
     }
 
     // Handle collisions
     private void OnTriggerEnter2D(Collider2D other){
+        
         if (other.tag == "Obstacle"){
             ResetPlayer();
         }
         if (other.tag == "powerup"){
             DeleteTail();
             Destroy(other.gameObject);
+        }
+        if (other.tag == "Corner" && Object.ReferenceEquals(other.transform, currCor)){
+            touching_corner = true;
+        } else {
+            touching_corner = false;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other){
+        if (other.tag == "Corner"){
+            touching_corner = false;
         }
     }
 
@@ -131,13 +185,18 @@ public class Player : MonoBehaviour
             Destroy(_segments[i].gameObject);
         }
         _segments.Clear();
-        _segments.Add(transform);
+        for (int i = 0; i < corners.Count; i++){
+            Destroy(corners[i].gameObject);
+        }
+        corners.Clear();
+        currSeg = SpawnSeg();
     }
 
     // reset the player to the starting position
     private void ResetPlayer(){
         DeleteTail();
         transform.position = Vector3.zero;
+        
     }
 
     /*

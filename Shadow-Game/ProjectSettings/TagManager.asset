@@ -7,6 +7,7 @@ TagManager:
   - Obstacle
   - powerup
   - Key
+  - Corner
   layers:
   - Default
   - TransparentFX

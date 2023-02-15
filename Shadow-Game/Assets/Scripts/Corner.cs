@@ -5,12 +5,20 @@ using UnityEngine;
 public class Corner : MonoBehaviour
 {
     public GameObject source;
-    public string sourdir;
+    public string sdir;
     public Transform newlocal;
-    public string newdir;
+    public string ndir;
     
-    public Transform Setup(GameObject sour, string sdir, string ndir){
+    public Transform Setup(GameObject sour, string sourdir, string newdir){
         print(sdir + ndir);
+        source = sour;
+        sdir = sourdir;
+        ndir = newdir;
+        DirMap();
+        return newlocal;
+    }
+
+    public void DirMap(){
         if(sdir == "n"){
             if(ndir == "w"){//working
                 transform.rotation = Quaternion.Euler(0f,0f,0f);
@@ -54,6 +62,5 @@ public class Corner : MonoBehaviour
         } else{
             print("Failed");
         }
-        return newlocal;
     }
 }

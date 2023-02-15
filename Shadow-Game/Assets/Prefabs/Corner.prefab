@@ -67,7 +67,7 @@ GameObject:
   - component: {fileID: -6732250631056724573}
   m_Layer: 0
   m_Name: Corner
-  m_TagString: Untagged
+  m_TagString: Corner
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -102,9 +102,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   source: {fileID: 0}
-  sourdir: 
+  sdir: 
   newlocal: {fileID: 7292807481973901958}
-  newdir: 
+  ndir: 
 --- !u!61 &4382498054135522105
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -103,6 +103,7 @@ MonoBehaviour:
   _segments: []
   corners: []
   currSeg: {fileID: 0}
+  move_cooldown: 0.08
 --- !u!1 &8572228362324506455
 GameObject:
   m_ObjectHideFlags: 0
