@@ -3509,6 +3509,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Level Advance
       objectReference: {fileID: 0}
+    - target: {fileID: 1730478932379362375, guid: fc1161633fc1941eda9b9c2953309242, type: 3}
+      propertyPath: nextLevel
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 1730478932379362377, guid: fc1161633fc1941eda9b9c2953309242, type: 3}
       propertyPath: m_Color.b
       value: 1
